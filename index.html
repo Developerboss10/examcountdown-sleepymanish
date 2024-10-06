@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Countdown and Clocks</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            transition: background-color 0.5s, color 0.5s;
+        }
+        body.dark-mode {
+            background-color: #333;
+            color: #f4f4f4;
+        }
+        .clock {
+            width: 100px;
+            height: 100px;
+            border: 10px solid #333;
+            border-radius: 50%;
+            position: relative;
+            margin: 10px auto;
+        }
+        .clock.dark-mode {
+            border-color: #f4f4f4;
+        }
+        .hour, .minute, .second {
+            position: absolute;
+            background: #333;
+            transform-origin: bottom;
+            transition: all 0.5s ease-in-out;
+        }
+        body.dark-mode .hour, body.dark-mode .minute {
+            background: #f4f4f4;
+        }
+        .hour {
+            width: 6px;
+            height: 30px;
+            bottom: 50%;
+            left: 50%;
+            transform: translateX(-50%) rotate(90deg);
+        }
+        .minute {
+            width: 4px;
+            height: 40px;
+            bottom: 50%;
+            left: 50%;
+            transform: translateX(-50%) rotate(180deg);
+        }
+        .second {
+            width: 2px;
+            height: 45px;
+            bottom: 50%;
+            left: 50%;
+            background: red;
+            transform: translateX(-50%) rotate(270deg);
+        }
+        .countdown {
+            margin: 20px auto;
+            padding: 10px;
+            background: #fff;
+            border-radius: 10px;
+            display: inline-block;
+            transition: background-color 0.5s, color 0.5s;
+        }
+        body.dark-mode .countdown {
+            background: #555;
+        }
+        .disclaimer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: gray;
+        }
+        .theme-toggle {
+            cursor: pointer;
+            font-size: 24px;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            border: none;
+            background: none;
+            transition: color 0.5s;
+        }
+        body.dark-mode .theme-toggle {
+            color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Exam Countdown and Clocks</h1>
+
+    <button class="theme-toggle" id="themeToggle">🌚</button> <!-- Full moon icon -->
+
+    <div class="clock">
+        <div class="hour"></div>
+        <div class="minute"></div>
+        <div class="second"></div>
+    </div>
+
+    <div class="countdown" id="jee-main-countdown">
+        <h2>JEE Main 2025 Countdown</h2>
+        <div id="jee-main-timer"></div>
+    </div>
+
+    <div class="countdown" id="board-countdown">
+        <h2>Board Exams 2025 Countdown</h2>
+        <div id="board-timer"></div>
+    </div>
+
+    <div class="countdown" id="jee-advanced-countdown">
+        <h2>JEE Advanced 2025 Countdown</h2>
+        <div id="jee-advanced-timer"></div>
+    </div>
+
+    <div class="countdown" id="neet-countdown">
+        <h2>NEET 2025 Countdown</h2>
+        <div id="neet-timer"></div>
+    </div>
+
+    <div class="disclaimer">
+        Disclaimer: This exam countdown is approximate and not official data.
+    </div>
+
+    <script>
+        // Theme toggle logic
+        const themeToggleButton = document.getElementById('themeToggle');
+        let darkMode = false;
+
+        themeToggleButton.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            darkMode = !darkMode; // Toggle the darkMode variable
+            themeToggleButton.innerHTML = darkMode ? '☀' : '🌚'; // Update icon
+        });
+
+        // Countdown logic
+        function startCountdown(endTime, elementId) {
+            const countdownElement = document.getElementById(elementId);
+            function updateCountdown() {
+                const now = new Date().getTime();
+                const distance = new Date(endTime).getTime() - now;
+
+                const months = Math.floor(distance / (1000 * 60 * 60 * 24 * 30));
+                const days = Math.floor((distance % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                const milliseconds = Math.floor(distance % 1000);
+                const nanoseconds = Math.floor(milliseconds * 1000);
+
+                countdownElement.innerHTML = `
+                    ${months} Months, ${days} Days, ${hours} Hours, ${minutes} Minutes,
+                    ${seconds} Seconds, ${milliseconds} Milliseconds, ${nanoseconds} Nanoseconds
+                `;
+
+                if (distance < 0) {
+                    clearInterval(interval);
+                    countdownElement.innerHTML = "EXAM STARTED!";
+                }
+            }
+            const interval = setInterval(updateCountdown, 1);
+            updateCountdown();
+        }
+
+        // Set the exam dates
+        const jeeMainDate = new Date('2025-01-15T00:00:00+05:30');
+        const boardDate = new Date('2025-02-07T00:00:00+05:30');
+        const jeeAdvancedDate = new Date('2025-05-10T00:00:00+05:30');
+        const neetDate = new Date('2025-05-05T00:00:00+05:30');
+
+        startCountdown(jeeMainDate, 'jee-main-timer');
+        startCountdown(boardDate, 'board-timer');
+        startCountdown(jeeAdvancedDate, 'jee-advanced-timer');
+        startCountdown(neetDate, 'neet-timer');
+
+        // Analog clock for Indian time
+        function updateClock() {
+            const now = new Date();
+            const hr = now.getHours();
+            const min = now.getMinutes();
+            const sec = now.getSeconds();
+
+            const hourDeg = ((hr % 12) + min / 60) * 30;
+            const minuteDeg = (min + sec / 60) * 6;
+            const secondDeg = sec * 6;
+
+            document.querySelector('.hour').style.transform = `translateX(-50%) rotate(${hourDeg}deg)`;
+            document.querySelector('.minute').style.transform = `translateX(-50%) rotate(${minuteDeg}deg)`;
+            document.querySelector('.second').style.transform = `translateX(-50%) rotate(${secondDeg}deg)`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+    <p>© 2024 All Rights Reserved.</p>
+</body>
+</html>
